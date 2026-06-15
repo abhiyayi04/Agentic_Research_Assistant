@@ -1,0 +1,32 @@
+Retrieval-Augmented Generation (RAG) is a technique that combines the strengths of large language models with external knowledge retrieval.
+Instead of relying solely on the model's parametric memory, RAG systems retrieve relevant documents from a knowledge base and use them to ground the model's response.
+
+The main advantage of RAG is that it allows the model to access up-to-date and domain-specific information without requiring fine-tuning.
+This makes it highly adaptable to different use cases, from customer support to legal research and medical question answering.
+
+A typical RAG pipeline consists of three stages: indexing, retrieval, and generation.
+During indexing, documents are chunked and converted into dense vector embeddings that are stored in a vector database.
+During retrieval, the user's query is embedded and compared against stored vectors to find the most semantically similar chunks.
+During generation, the retrieved chunks are passed as context to the language model, which synthesizes a coherent answer.
+
+Semantic chunking is a key improvement over fixed-size chunking strategies.
+Rather than splitting documents at arbitrary character or token boundaries, semantic chunking identifies natural topic transitions in the text.
+This produces chunks that are more coherent and self-contained, which leads to higher retrieval precision and more faithful answers.
+
+Vector databases such as Qdrant, Pinecone, and Weaviate are purpose-built for storing and querying high-dimensional vectors at scale.
+They support approximate nearest-neighbor (ANN) search, which allows retrieval of the top-k most relevant chunks in milliseconds even across millions of documents.
+Qdrant in particular offers a rich filtering API that allows you to combine vector similarity search with structured metadata filters.
+
+Multi-agent RAG systems extend the basic retrieval-generation loop by introducing specialized agents for different subtasks.
+A planner agent decomposes complex questions into focused sub-questions.
+Retrieval agents then execute these sub-questions in parallel against different data sources: vector databases, SQL databases, and the web.
+A synthesis agent merges the retrieved context into a single coherent answer.
+A critic agent evaluates the answer for faithfulness, completeness, and confidence before delivering it to the user.
+
+Session memory allows multi-agent systems to avoid redundant retrievals across multiple turns of a conversation.
+By caching retrieved context in a fast in-memory store like Redis, the planner agent can detect when a new question overlaps with prior queries and reuse the existing context.
+This reduces latency, API costs, and unnecessary load on the retrieval infrastructure.
+
+Observability is critical in production agentic systems.
+Tools like LangSmith allow developers to trace every step of the agent pipeline, measure retrieval quality metrics, and identify failure modes.
+Without observability, it is impossible to systematically improve a RAG system beyond anecdotal testing.

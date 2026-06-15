@@ -1,0 +1,27 @@
+fastapi==0.111.0
+uvicorn[standard]==0.30.0
+python-multipart==0.0.9
+
+# PDF parsing
+pypdf>=4.2.0
+
+# LangChain
+langchain>=0.2.6
+langchain-openai>=0.1.14
+langchain-experimental>=0.0.61
+langchain-community>=0.2.6
+
+# Local embeddings
+sentence-transformers>=2.7.0
+
+# Vector DB
+qdrant-client>=1.9.1
+
+# Structured DB
+pymysql>=1.1.0
+
+# OpenAI (for future LLM calls — not embeddings)
+openai>=1.35.0
+
+# Env
+python-dotenv>=1.0.0

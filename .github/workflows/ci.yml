@@ -1,0 +1,14 @@
+# Phase 4D: GitHub Actions CI/CD — lint, test, Docker build on PR and merge
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "CI pipeline placeholder — implement in Phase 4D"

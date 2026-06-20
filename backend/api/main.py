@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.api.routes import ingest, query
+from backend.api.routes import ingest, query, sessions
 from backend.ingestion.indexer import ensure_mysql_schema, ensure_qdrant_collection
 
 
@@ -25,6 +25,7 @@ app.add_middleware(
 
 app.include_router(ingest.router)
 app.include_router(query.router)
+app.include_router(sessions.router)
 
 
 @app.get("/health")

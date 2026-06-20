@@ -5,11 +5,12 @@ python-multipart==0.0.9
 # PDF parsing
 pypdf>=4.2.0
 
-# LangChain
+# LangChain + LangGraph
 langchain>=0.2.6
 langchain-openai>=0.1.14
 langchain-experimental>=0.0.61
 langchain-community>=0.2.6
+langgraph>=0.2.0
 
 # Local embeddings
 sentence-transformers>=2.7.0
@@ -20,8 +21,17 @@ qdrant-client>=1.9.1
 # Structured DB
 pymysql>=1.1.0
 
-# OpenAI (for future LLM calls — not embeddings)
+# OpenAI (LLM + query generation)
 openai>=1.35.0
+
+# Web search (optional — set TAVILY_API_KEY to enable)
+tavily-python>=0.3.0
+
+# Session memory
+redis>=5.0.0
+
+# MCP server
+mcp>=1.0.0
 
 # Env
 python-dotenv>=1.0.0

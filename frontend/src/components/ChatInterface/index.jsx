@@ -2,7 +2,48 @@ import { useState } from 'react'
 
 const API_BASE = 'http://localhost:8000'
 
-function ChatInterface() {
+function CitationList({ citations }) {
+  if (!citations?.length) return null
+  return (
+    <div style={{ marginTop: '0.6rem', paddingTop: '0.5rem', borderTop: '1px solid #e5e7eb' }}>
+      <p style={{ margin: '0 0 0.3rem', fontSize: '0.72rem', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        Citations
+      </p>
+      {citations.map((c) => (
+        <div key={c.id} style={{ fontSize: '0.75rem', color: '#6b7280', marginBottom: '0.2rem' }}>
+          <span style={{ fontWeight: 600, color: '#374151' }}>[{c.id}]</span>{' '}
+          <span style={{ fontStyle: 'italic' }}>{c.source}</span>
+          {c.quote && (
+            <span style={{ color: '#9ca3af' }}> — "{c.quote}"</span>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function Message({ msg }) {
+  const isUser = msg.role === 'user'
+  return (
+    <div style={{ display: 'flex', justifyContent: isUser ? 'flex-end' : 'flex-start' }}>
+      <div style={{
+        maxWidth: '80%',
+        padding: '0.6rem 0.9rem',
+        borderRadius: '8px',
+        background: isUser ? '#2563eb' : '#fff',
+        color: isUser ? '#fff' : '#111',
+        border: isUser ? 'none' : '1px solid #e5e7eb',
+        fontSize: '0.9rem',
+        lineHeight: '1.6',
+      }}>
+        <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{msg.text}</p>
+        {!isUser && <CitationList citations={msg.citations} />}
+      </div>
+    </div>
+  )
+}
+
+export default function ChatInterface() {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -22,25 +63,24 @@ function ChatInterface() {
         body: JSON.stringify({ question }),
       })
       const data = await res.json()
-      setMessages(prev => [
-        ...prev,
-        { role: 'assistant', text: data.answer, sources: data.sources },
-      ])
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        text: data.answer,
+        citations: data.citations,
+      }])
     } catch {
-      setMessages(prev => [
-        ...prev,
-        { role: 'assistant', text: 'Error: could not reach the backend.' },
-      ])
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        text: 'Error: could not reach the backend.',
+        citations: [],
+      }])
     } finally {
       setLoading(false)
     }
   }
 
   const onKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      send()
-    }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() }
   }
 
   return (
@@ -59,36 +99,13 @@ function ChatInterface() {
             Ask a question about your ingested documents...
           </p>
         )}
-        {messages.map((msg, i) => (
-          <div key={i} style={{ display: 'flex', justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
-            <div style={{
-              maxWidth: '80%',
-              padding: '0.6rem 0.9rem',
-              borderRadius: '8px',
-              background: msg.role === 'user' ? '#2563eb' : '#fff',
-              color: msg.role === 'user' ? '#fff' : '#111',
-              border: msg.role === 'assistant' ? '1px solid #e5e7eb' : 'none',
-              fontSize: '0.9rem',
-              lineHeight: '1.6',
-            }}>
-              <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{msg.text}</p>
-              {msg.sources?.length > 0 && (
-                <p style={{ margin: '0.4rem 0 0', fontSize: '0.75rem', color: '#6b7280' }}>
-                  Sources: {msg.sources.join(', ')}
-                </p>
-              )}
-            </div>
-          </div>
-        ))}
+        {messages.map((msg, i) => <Message key={i} msg={msg} />)}
         {loading && (
           <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
             <div style={{
-              padding: '0.6rem 0.9rem',
-              borderRadius: '8px',
-              background: '#fff',
-              border: '1px solid #e5e7eb',
-              color: '#9ca3af',
-              fontSize: '0.9rem',
+              padding: '0.6rem 0.9rem', borderRadius: '8px',
+              background: '#fff', border: '1px solid #e5e7eb',
+              color: '#9ca3af', fontSize: '0.9rem',
             }}>
               Thinking...
             </div>
@@ -97,20 +114,14 @@ function ChatInterface() {
       </div>
 
       <div style={{
-        display: 'flex',
-        gap: '0.5rem',
-        padding: '0.75rem',
-        borderTop: '1px solid #e5e7eb',
-        background: '#fff',
+        display: 'flex', gap: '0.5rem', padding: '0.75rem',
+        borderTop: '1px solid #e5e7eb', background: '#fff',
       }}>
         <input
           style={{
-            flex: 1,
-            padding: '0.5rem 0.75rem',
-            border: '1px solid #e5e7eb',
-            borderRadius: '6px',
-            fontSize: '0.95rem',
-            outline: 'none',
+            flex: 1, padding: '0.5rem 0.75rem',
+            border: '1px solid #e5e7eb', borderRadius: '6px',
+            fontSize: '0.95rem', outline: 'none',
           }}
           placeholder="Type your research question..."
           value={input}
@@ -122,11 +133,8 @@ function ChatInterface() {
           style={{
             padding: '0.5rem 1.25rem',
             background: loading ? '#93c5fd' : '#2563eb',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: loading ? 'not-allowed' : 'pointer',
-            fontWeight: 500,
+            color: '#fff', border: 'none', borderRadius: '6px',
+            cursor: loading ? 'not-allowed' : 'pointer', fontWeight: 500,
           }}
           onClick={send}
           disabled={loading}
@@ -137,5 +145,3 @@ function ChatInterface() {
     </div>
   )
 }
-
-export default ChatInterface
